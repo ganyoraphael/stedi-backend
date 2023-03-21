@@ -1,48 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stedi-ganyoraphael-dev
+  name: cit270ganyoraphaelservice
 spec:
-  replicas:
+  replicas: 1
   selector:
     matchLabels:
-      app: stedi-ganyoraphael-dev
+      app: cit270ganyoraphaelservice
   template:
     metadata:
+      name: cit270ganyoraphaelservice
       labels:
-        app: stedi-ganyoraphael-dev
+        app: cit270ganyoraphaelservice
     spec:
       containers:
-        - name: stedi-ganyoraphael-dev
-          image: gcr.io/thespiders/raphael-stedi-api
-          env:
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-secrets-prod
-                  key: REDIS_PASS
-            - name: REDIS_HOST
-              value: "redis-stedi-prod"
-            - name: REDIS_POST
-              value: "6379"
-            - name: REDIS_DB
-              value: "0"
-            - name: KAFKA_BROKER
-              value: "localhost:9092"
-          ports:
-            - containerPort: 443
-          resources:
-            limits:
-              cpu: ".5"
-              memory: "500Mi"
-            requests:
-              cpu: ".25"
-              memory: "250Mi"
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 4567
-            initialDelaySeconds: 10
-            periodSeconds: 3
+      - name: cit270ganyoraphaelservice
+        image: gcr.io/cit-270-kubernetes/ganyoraphael-api
+        volumeMounts:
+        - name: ssl
+          monutPath: "/etc/letsencrypt/live/ganyoraphael.cit270.com/"
+        command: ["npm"]
+        args: ["run", "starts"]
+        resources:
+          requests:
+            cpu: 0.125
+            memory: 500Mi
+          limits:
+            cpu: 0.125
+            memory: 600Mi
+        imagePullPolicy: Always
+      volumes:
+      - name: ssl
+        secret:
+          secretName: ganyoraphaelcerts
 
 
