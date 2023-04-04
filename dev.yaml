@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cit270ganyoraphaelservice
+  name: citraphaelservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cit270ganyoraphaelservice
+      app: citraphaelservice
   template:
     metadata:
-      name: cit270ganyoraphaelservice
+      name: citraphaelservice
       labels:
-        app: cit270ganyoraphaelservice
+        app: citraphaelservice
     spec:
       containers:
-      - name: cit270ganyoraphaelservice
-        image: gcr.io/cit-270-kubernetes/ganyoraphael-api
+      - name: citraphaelservice
+        image: gcr.io/cit-270-kubernetes/raphael-api
         volumeMounts:
         - name: ssl
-          monutPath: "/etc/letsencrypt/live/ganyoraphael.cit270.com/"
+          monutPath: "/etc/letsencrypt/live/raphael.262.com/"
         command: ["npm"]
         args: ["run", "starts"]
         resources:
@@ -32,6 +32,6 @@ spec:
       volumes:
       - name: ssl
         secret:
-          secretName: ganyoraphaelcerts
+          secretName: raphaelcerts
 
 

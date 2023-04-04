@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis-stedi-ganyoraphael
+  name: redis-stedi-raphael
 spec:
   selector:
     matchLabels:
       app: redis-stedi-ganyoraphael # must match spec.template.metadata.labels
-  serviceName: redis-stedi-ganyoraphael
+  serviceName: redis-stedi-raphael
   replicas: 1
   template:
     metadata:
       labels:
-        app: redis-stedi-ganyoraphael
+        app: redis-stedi-raphael
     spec:
       containers:
-        - name: redis-stedi-ganyoraphael
+        - name: redis-stedi-raphael
           image: redis:7.0.5-alpine
           imagePullPolicy: Always
           args: ["--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes", "--save", "900", "1", "--save", "30", "2"]
@@ -25,14 +25,14 @@ spec:
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: redis-stedi-ganyoraphael
+                name: redis-stedi-raphael
                 key: REDIS_PASSWORD
           volumeMounts:
-            - name: redis-stedi-ganyoraphael
+            - name: redis-stedi-raphael
               mountPath: /data
   volumeClaimTemplates:
   - metadata:
-      name: redis-stedi-ganyoraphael
+      name: redis-stedi-raphael
     spec:
       accessModes:
         - ReadWriteOnce
@@ -43,11 +43,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-stedi-ganyoraphael
+  name: redis-stedi-raphael
 spec:
   ports:
     - port: 6379
       name: redis
   clusterIP: None
   selector:
-    app: redis-stedi-ganyoraphael
+    app: redis-stedi-raphael
