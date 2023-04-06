@@ -1,13 +1,23 @@
 apiVersion: apps/v1
 kind: StatefulSet
+<<<<<<< HEAD
 metadata: 
+=======
+metadata:
+>>>>>>> 50f40d33753216b0840b872835a090f74c9739e0
   name: redis-stedi-raphael
 spec:
   selector:
     matchLabels:
+<<<<<<< HEAD
       app: redis-stedi-raphael
   serviceName: redis-stedi-raphael
   replicas:
+=======
+      app: redis-stedi-ganyoraphael # must match spec.template.metadata.labels
+  serviceName: redis-stedi-raphael
+  replicas: 1
+>>>>>>> 50f40d33753216b0840b872835a090f74c9739e0
   template:
     metadata:
       labels:
@@ -25,6 +35,7 @@ spec:
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
+<<<<<<< HEAD
                 name: redis-secrets-raphael
                 key: REDIS_PASSWORD
           volumeMounts:
@@ -33,6 +44,16 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: redis-raphael-volume
+=======
+                name: redis-stedi-raphael
+                key: REDIS_PASSWORD
+          volumeMounts:
+            - name: redis-stedi-raphael
+              mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-stedi-raphael
+>>>>>>> 50f40d33753216b0840b872835a090f74c9739e0
     spec:
       accessModes:
         - ReadWriteOnce

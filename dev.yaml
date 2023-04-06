@@ -1,11 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
+<<<<<<< HEAD
 metadata: 
   name: stedi-raphael-dev
+=======
+metadata:
+  name: citraphaelservice
+>>>>>>> 50f40d33753216b0840b872835a090f74c9739e0
 spec:
   replicas: 1
   selector: 
     matchLabels:
+<<<<<<< HEAD
       app: stedi-raphael-dev
   template:
     metadata:
@@ -83,3 +89,34 @@ spec:
             name: stedi-raphael-nodeport
             port:
               number: 80
+=======
+      app: citraphaelservice
+  template:
+    metadata:
+      name: citraphaelservice
+      labels:
+        app: citraphaelservice
+    spec:
+      containers:
+      - name: citraphaelservice
+        image: gcr.io/cit-270-kubernetes/raphael-api
+        volumeMounts:
+        - name: ssl
+          monutPath: "/etc/letsencrypt/live/raphael.262.com/"
+        command: ["npm"]
+        args: ["run", "starts"]
+        resources:
+          requests:
+            cpu: 0.125
+            memory: 500Mi
+          limits:
+            cpu: 0.125
+            memory: 600Mi
+        imagePullPolicy: Always
+      volumes:
+      - name: ssl
+        secret:
+          secretName: raphaelcerts
+
+
+>>>>>>> 50f40d33753216b0840b872835a090f74c9739e0
