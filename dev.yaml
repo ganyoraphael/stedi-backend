@@ -1,37 +1,85 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:
-  name: cit270ganyoraphaelservice
+metadata: 
+  name: stedi-raphael-dev
 spec:
   replicas: 1
-  selector:
+  selector: 
     matchLabels:
-      app: cit270ganyoraphaelservice
+      app: stedi-raphael-dev
   template:
     metadata:
-      name: cit270ganyoraphaelservice
-      labels:
-        app: cit270ganyoraphaelservice
+      labels: 
+        app: stedi-raphael-dev
     spec:
-      containers:
-      - name: cit270ganyoraphaelservice
-        image: gcr.io/cit-270-kubernetes/ganyoraphael-api
-        volumeMounts:
-        - name: ssl
-          monutPath: "/etc/letsencrypt/live/ganyoraphael.cit270.com/"
-        command: ["npm"]
-        args: ["run", "starts"]
-        resources:
-          requests:
-            cpu: 0.125
-            memory: 500Mi
-          limits:
-            cpu: 0.125
-            memory: 600Mi
-        imagePullPolicy: Always
-      volumes:
-      - name: ssl
-        secret:
-          secretName: ganyoraphaelcerts
-
-
+      containers: 
+        - name: stedi-raphael-dev
+          image: gcr.io/thespiders/raphael-stedi-api
+          env: 
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef: 
+                  name: redis-secrets-raphael
+                  key: REDIS_PASS
+            - name: REDIS_HOST
+              value: "redis-stedi-raphael"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DB
+              value: "0"
+            - name: KAFKA_BROKER
+              value: "localhost:9092"
+          ports:
+            - containerPort: 443
+          resources:
+            limits:
+              cpu: ".5"
+              memory: "500Mi"
+            requests:
+              cpu: ".25"
+              memory: "250Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4567
+            initialDelaySeconds: 10
+            periodSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stedi--nodeport
+spec:
+  selector:
+    app: stedi-raphael-dev
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 4567
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: stedi-raphael-certificate
+spec:
+  domains:
+    - raphael.cit262.com
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stedi-raphael-ingress
+  annotations: 
+    kubernetes.io/ingress.global-static-ip-name: stedi-raphael-public
+    networking.gke.io/managed-certificates: stedi-raphael-certificate
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: stedi-raphael-nodeport
+            port:
+              number: 80
